@@ -1,4 +1,5 @@
 import itertools
+import copy
 from rect import Rect
 
 def bounding_box(rectangles):
@@ -11,9 +12,10 @@ def bounding_box(rectangles):
 
 def intersect(rectangles):
     """Check if any rectangle in the list intersects with any other."""
-    return any(ra.intersects(rb) for (ra, rb) in
-        itertools.combinations(rectangles, 2)
-    )
+    for a, b in itertools.combinations(rectangles, 2):
+        if a.intersects(b):
+            return True
+    return False
 
 def uniq(values):
     if len(values) == 0:
@@ -28,13 +30,11 @@ def uniq(values):
 
 def total_area(rectangles):
     """Return the total area of the rectangles."""
-    get_collision_boxes = lambda recs: [
-        ra.collision_box(rb) for ra, rb in
-            itertools.combinations(recs, 2) if ra.intersects(rb)
-    ]
-    collision_boxes = get_collision_boxes(rectangles)
-    collision_area = sum(r.area for r in collision_boxes)
-    while intersect(collision_boxes):
-        collision_boxes = uniq(get_collision_boxes(collision_boxes))
-        collision_area -= sum(r.area for r in collision_boxes)
-    return sum(r.area for r in rectangles) - collision_area
+    box = bounding_box(rectangles)
+    m = [[0]*box.width for _ in range(box.height)]
+    for r in rectangles:
+        for y in range(r.height):
+            for x in range(r.width):
+                m[r.y+y-box.y][r.x+x-box.x] = 1
+
+    return sum(sum(w) for w in m)
