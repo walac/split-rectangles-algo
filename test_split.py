@@ -35,3 +35,16 @@ def test_split_rectangles():
         assert not utils.intersect(result), info
         assert utils.total_area(tc) == sum(r.area for r in result), info
         assert utils.bounding_box(tc) == utils.bounding_box(result), info
+
+def test_no_intersection():
+    recs = [
+        Rect(0, 0, 1, 1),
+        Rect(2, 2, 1, 1),
+        Rect(3, 3, 1, 1),
+    ]
+
+    recs.sort()
+    result = split_rectangles(recs)
+    result.sort()
+
+    assert not any(a != b for a, b in zip(recs, result))
