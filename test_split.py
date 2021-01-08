@@ -48,3 +48,14 @@ def test_no_intersection():
     result.sort()
 
     assert not any(a != b for a, b in zip(recs, result))
+
+def test_adjacent():
+    recs = [
+            Rect(0, 0, 1, 1),
+            Rect(0, 1, 1, 1),
+            Rect(1, 0, 1, 1),
+    ]
+
+    recs.sort()
+    result = split_rectangles(recs)
+    result.sort()
